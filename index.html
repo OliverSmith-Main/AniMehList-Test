@@ -18,6 +18,11 @@
       rel="stylesheet"
     />
 
+    <!-- Anime.js (global, before module) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <!-- Marked.js for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
+
     <style>
       :root {
         --bg: #0b0c10;
@@ -2123,6 +2128,203 @@
       #offline-modal h3 i {
         color: var(--warn);
       }
+
+      /* ===== NOTE HOVER on cover ===== */
+      .cover-note-hover {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(0deg, rgba(4,5,14,0.97) 0%, rgba(8,12,26,0.91) 100%);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        border-top: 1px solid rgba(124,58,237,0.28);
+        padding: 0 10px;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.36s cubic-bezier(0.2,0.9,0.3,1), padding 0.36s;
+        z-index: 4;
+        pointer-events: none;
+      }
+      .cover-note-hover.note-visible {
+        max-height: 200px;
+        padding: 8px 10px 10px;
+        pointer-events: auto;
+        overflow-y: auto;
+      }
+      .cover-note-hover .note-label {
+        font-family: var(--title-font);
+        font-size: 8px;
+        letter-spacing: 0.8px;
+        color: #a78bfa;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .cover-note-hover .note-content {
+        font-size: 11px;
+        color: #c4cce8;
+        line-height: 1.55;
+      }
+      .cover-note-hover .note-content p { margin: 0 0 3px; }
+      .cover-note-hover .note-content p:last-child { margin-bottom: 0; }
+      .cover-note-hover .note-content strong { color: #e4e9ff; font-weight: 700; }
+      .cover-note-hover .note-content em { color: #a78bfa; font-style: italic; }
+      .cover-note-hover .note-content code {
+        background: rgba(124,58,237,0.15);
+        border-radius: 3px;
+        padding: 0 3px;
+        font-size: 10px;
+        font-family: monospace;
+      }
+      .cover-note-hover .note-content h1,
+      .cover-note-hover .note-content h2,
+      .cover-note-hover .note-content h3 {
+        color: #e4e9ff;
+        font-size: 11px;
+        margin: 2px 0;
+        font-family: var(--title-font);
+      }
+      .cover-note-hover .note-content ul,
+      .cover-note-hover .note-content ol {
+        margin: 0 0 3px;
+        padding-left: 16px;
+      }
+      .cover-note-hover .note-content blockquote {
+        border-left: 2px solid var(--brand);
+        padding-left: 6px;
+        color: var(--muted);
+        margin: 2px 0;
+      }
+
+      /* ===== EYE BUTTON (password toggle) ===== */
+      .eye-btn {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 14px;
+        padding: 4px 6px;
+        z-index: 4;
+        transition: color 0.18s;
+        line-height: 1;
+        border-radius: 6px;
+      }
+      .eye-btn:hover { color: var(--text); }
+      .eye-btn:focus-visible { outline: 0; box-shadow: var(--focus-ring); }
+
+      /* ===== MODAL COVER PREVIEW ===== */
+      .modal-cover-wrap {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+      }
+      .modal-cover-controls {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-width: 0;
+      }
+      .modal-cover-thumb {
+        width: 86px;
+        flex: 0 0 86px;
+        aspect-ratio: 1 / 1.4;
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.1);
+        overflow: hidden;
+        background: #0e1323;
+        position: relative;
+      }
+      .modal-cover-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: none;
+        position: absolute;
+        inset: 0;
+      }
+      .modal-cover-thumb img.has-img { display: block; }
+      .modal-cover-thumb .mct-ph {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #3e4a6e;
+        font-size: 22px;
+      }
+
+      /* ===== MARKDOWN PREVIEW IN MODAL ===== */
+      .notes-label-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .notes-preview-toggle {
+        font-size: 11px !important;
+        padding: 3px 8px !important;
+        border-radius: 6px !important;
+        flex-shrink: 0;
+        line-height: 1.3;
+      }
+      .md-preview {
+        background: rgba(255,255,255,0.02);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 10px;
+        padding: 10px 12px;
+        color: #d0d8f0;
+        font-size: 13px;
+        line-height: 1.6;
+        min-height: 56px;
+        max-height: 200px;
+        overflow-y: auto;
+        margin-top: 4px;
+      }
+      .md-preview p { margin: 0 0 6px; }
+      .md-preview p:last-child { margin-bottom: 0; }
+      .md-preview strong { color: #e4e9ff; }
+      .md-preview em { color: #a78bfa; }
+      .md-preview code { background: rgba(124,58,237,0.15); padding: 1px 4px; border-radius: 4px; font-size: 12px; font-family: monospace; }
+      .md-preview pre { background: rgba(0,0,0,0.3); border-radius: 8px; padding: 8px; overflow-x: auto; margin: 4px 0; }
+      .md-preview ul, .md-preview ol { margin: 0 0 6px; padding-left: 20px; }
+      .md-preview h1,.md-preview h2,.md-preview h3 { color: #e4e9ff; margin: 4px 0; font-family: var(--title-font); font-size: 14px; }
+      .md-preview blockquote { border-left: 3px solid var(--brand); padding-left: 10px; color: var(--muted); margin: 4px 0; }
+      .md-preview a { color: #8ab4ff; text-decoration: underline; }
+      .md-preview.hidden { display: none; }
+
+      /* ===== CARD HOVER GLOW (CSS-level) ===== */
+      .card {
+        transition: transform 0.2s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      }
+      .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 14px 36px rgba(124,58,237,0.18), 0 4px 14px rgba(0,0,0,0.45);
+        border-color: rgba(124,58,237,0.22);
+      }
+
+      /* ===== ANIME.JS HELPERS ===== */
+      #banner-canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        pointer-events: none;
+      }
+      .logo-img { will-change: filter; }
+      /* section titles hidden initially for intersection observer animation */
+      .section-title { opacity: 1; }
+
+      /* Toolbar tab active pill marker (for anime tab indicator) */
+      .toolbar-tabs { position: relative; }
     </style>
   </head>
 
@@ -2265,6 +2467,7 @@
     </header>
 
     <section class="banner" aria-label="Featured">
+      <canvas id="banner-canvas" aria-hidden="true"></canvas>
       <div class="banner-image" id="banner-image" aria-hidden="true"></div>
       <div class="banner-inner">
         <div class="hero container">
@@ -2482,22 +2685,30 @@
             </div>
           </div>
 
-          <!-- Mobile: Auto cover + Source split -->
-          <div class="row" style="align-items: flex-end">
-            <button class="btn ghost" id="btn-autocover" title="Auto fetch cover by title" style="flex: 1">
-              <i class="fa-solid fa-wand-magic-sparkles"></i>Auto cover
-            </button>
+          <!-- Mobile: Auto cover + Source split + Cover Preview -->
+          <div class="modal-cover-wrap">
+            <div class="modal-cover-controls">
+              <button class="btn ghost" id="btn-autocover" title="Auto fetch cover by title">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>Auto cover
+              </button>
 
-            <div class="float-group input-wrapper" style="flex: 1; min-width: 180px">
-              <label for="f-cover-source">Source</label>
-              <div class="field">
-                <select id="f-cover-source" class="select input" aria-label="Cover source override">
-                  <option value="" selected>Default</option>
-                  <option value="ANILIST">AniList</option>
-                  <option value="JIKAN">Jikan</option>
-                  <option value="KITSU">Kitsu</option>
-                </select>
+              <div class="float-group" style="min-width:0">
+                <label for="f-cover-source">Source</label>
+                <div class="field">
+                  <select id="f-cover-source" class="select input" aria-label="Cover source override">
+                    <option value="" selected>Default</option>
+                    <option value="ANILIST">AniList</option>
+                    <option value="JIKAN">Jikan</option>
+                    <option value="KITSU">Kitsu</option>
+                  </select>
+                </div>
               </div>
+            </div>
+
+            <!-- Live cover preview (matches 1/1.4 ratio of real cards) -->
+            <div class="modal-cover-thumb" id="modal-cover-thumb" title="Cover preview">
+              <img id="modal-cover-img" alt="Cover preview" />
+              <div class="mct-ph" id="modal-cover-ph"><i class="fa-solid fa-image"></i></div>
             </div>
           </div>
 
@@ -2505,14 +2716,20 @@
           <hr class="modal-divider" aria-hidden="true" />
 
           <div class="row">
-            <div class="float-group input-wrapper">
-              <label for="f-notes">Notes (optional)</label>
+            <div class="float-group input-wrapper" style="width:100%">
+              <div class="notes-label-row">
+                <label for="f-notes">Notes (optional — Markdown supported)</label>
+                <button class="btn ghost sm notes-preview-toggle" id="notes-preview-toggle" type="button" title="Toggle Markdown preview">
+                  <i class="fa-solid fa-eye"></i> Preview
+                </button>
+              </div>
               <div class="field">
-                <input id="f-notes" class="input" aria-label="Notes" />
+                <textarea id="f-notes" class="input" aria-label="Notes" rows="3" style="resize:vertical;min-height:60px;padding-right:40px;font-family:var(--body-font)"></textarea>
                 <button class="clear-btn" id="clear-notes" aria-label="Clear notes">
                   <i class="fa-solid fa-xmark"></i>
                 </button>
               </div>
+              <div class="md-preview hidden" id="notes-md-preview" aria-live="polite"></div>
             </div>
           </div>
 
@@ -2561,8 +2778,11 @@
           <div class="row">
             <div class="float-group input-wrapper">
               <label for="login-password">Password</label>
-              <div class="field">
-                <input id="login-password" class="input" type="password" aria-label="Password" />
+              <div class="field" style="position:relative">
+                <input id="login-password" class="input" type="password" aria-label="Password" style="padding-right:42px" />
+                <button class="eye-btn" id="toggle-login-pw" type="button" aria-label="Toggle password visibility" tabindex="-1">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
               </div>
             </div>
           </div>
@@ -2600,8 +2820,11 @@
           <div class="row">
             <div class="float-group input-wrapper">
               <label for="signup-password">Password</label>
-              <div class="field">
-                <input id="signup-password" class="input" type="password" aria-label="Password" />
+              <div class="field" style="position:relative">
+                <input id="signup-password" class="input" type="password" aria-label="Password" style="padding-right:42px" />
+                <button class="eye-btn" id="toggle-signup-pw" type="button" aria-label="Toggle password visibility" tabindex="-1">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
               </div>
             </div>
           </div>
@@ -2876,6 +3099,9 @@
       // Scroll-to-top inactivity
       let scrollTopInactivityTimer = null;
 
+      // Visibility / staleness tracking (prevents needing full reload when tab comes back)
+      let lastLoadTime = 0;
+
       // ---------- Elements ----------
       const sectionsEl = document.getElementById("sections");
       const gridEl = document.getElementById("grid");
@@ -3018,6 +3244,14 @@
       const clearImage = document.getElementById("clear-image");
       const clearNotes = document.getElementById("clear-notes");
 
+      // Cover preview in modal
+      const modalCoverImg = document.getElementById("modal-cover-img");
+      const modalCoverPh = document.getElementById("modal-cover-ph");
+
+      // Notes markdown preview
+      const notesPreviewToggle = document.getElementById("notes-preview-toggle");
+      const notesMdPreview = document.getElementById("notes-md-preview");
+
       // Scroll to top
       const scrollToTop = document.getElementById("scroll-to-top");
 
@@ -3084,6 +3318,8 @@
         if (message) preloaderMsg.textContent = message;
         appPreloader.classList.add("active");
         appPreloader.setAttribute("aria-hidden", "false");
+        // Animate logo letters
+        requestAnimationFrame(animatePreloaderLogo);
       }
 
       function updatePreloader(message = "") {
@@ -3207,6 +3443,21 @@
         el.classList.add("open");
         el.setAttribute("aria-hidden", "false");
         trapFocus(el);
+
+        // Spring entrance via anime.js
+        if (typeof anime !== 'undefined') {
+          const sheet = el.querySelector('.sheet');
+          if (sheet) {
+            anime({
+              targets: sheet,
+              translateY: [14, 0],
+              scale: [0.972, 1],
+              opacity: [0, 1],
+              duration: 420,
+              easing: 'spring(1, 82, 12, 0)',
+            });
+          }
+        }
       }
 
       function closeModal(el) {
@@ -3488,6 +3739,48 @@
         badge.innerHTML = `<i class="fa-solid fa-film"></i> ${progressText(row)}`;
         cover.appendChild(badge);
 
+        // Note hover — only in grid view, only when there are notes
+        if (row.notes) {
+          const noteHover = document.createElement("div");
+          noteHover.className = "cover-note-hover";
+
+          const noteLabel = document.createElement("div");
+          noteLabel.className = "note-label";
+          noteLabel.innerHTML = '<i class="fa-solid fa-note-sticky"></i> Notes';
+
+          const noteContent = document.createElement("div");
+          noteContent.className = "note-content";
+          try {
+            noteContent.innerHTML = (typeof marked !== 'undefined' && marked.parse)
+              ? marked.parse(row.notes, { breaks: true })
+              : escapeHtml(row.notes).replace(/\n/g, '<br>');
+          } catch {
+            noteContent.textContent = row.notes;
+          }
+
+          noteHover.append(noteLabel, noteContent);
+          cover.appendChild(noteHover);
+
+          // Mouse hover
+          cover.addEventListener('mouseenter', () => noteHover.classList.add('note-visible'), { passive: true });
+          cover.addEventListener('mouseleave', () => noteHover.classList.remove('note-visible'), { passive: true });
+
+          // Touch long-press (500ms)
+          let touchTimer = null;
+          cover.addEventListener('touchstart', () => {
+            touchTimer = setTimeout(() => noteHover.classList.add('note-visible'), 500);
+          }, { passive: true });
+          cover.addEventListener('touchend', () => {
+            clearTimeout(touchTimer);
+            if (noteHover.classList.contains('note-visible')) {
+              setTimeout(() => noteHover.classList.remove('note-visible'), 1800);
+            }
+          }, { passive: true });
+          cover.addEventListener('touchmove', () => {
+            clearTimeout(touchTimer);
+          }, { passive: true });
+        }
+
         const body = document.createElement("div");
         body.className = "card-body";
 
@@ -3749,6 +4042,12 @@
           updateSortToggleUI();
           updateMobileMenuUI();
           updateAccountUI();
+
+          // Animate new cards and section titles
+          requestAnimationFrame(() => {
+            animateNewCards();
+            initSectionTitleObserver();
+          });
         }, 70);
       }
 
@@ -3846,6 +4145,7 @@
           const { data: rows, error } = await supabase.from("entries").select("*").order("created_at", { ascending: false });
           if (error) throw error;
           data = rows || [];
+          lastLoadTime = Date.now();
           render();
 
           // background covers (do NOT block preloader)
@@ -3918,6 +4218,86 @@
       btnSave.onclick = saveModal;
       btnDelete.onclick = removeModal;
 
+      // ---------- Cover preview in modal ----------
+      function updateModalCoverPreview() {
+        const url = (fImage.value || '').trim();
+        if (url) {
+          modalCoverImg.src = url;
+          modalCoverImg.classList.remove('has-img');
+          modalCoverPh.style.display = 'flex';
+          modalCoverImg.onload = () => {
+            modalCoverImg.classList.add('has-img');
+            modalCoverPh.style.display = 'none';
+          };
+          modalCoverImg.onerror = () => {
+            modalCoverImg.classList.remove('has-img');
+            modalCoverPh.style.display = 'flex';
+          };
+        } else {
+          modalCoverImg.classList.remove('has-img');
+          modalCoverImg.src = '';
+          modalCoverPh.style.display = 'flex';
+        }
+      }
+
+      fImage.addEventListener('input', updateModalCoverPreview);
+
+      // ---------- Notes Markdown preview toggle ----------
+      function renderNotesMd() {
+        const raw = fNotes.value || '';
+        if (typeof marked !== 'undefined' && marked.parse) {
+          notesMdPreview.innerHTML = marked.parse(raw || '*No notes yet…*', { breaks: true });
+        } else {
+          notesMdPreview.textContent = raw || '(No notes)';
+        }
+      }
+
+      notesPreviewToggle.addEventListener('click', () => {
+        const hidden = notesMdPreview.classList.contains('hidden');
+        if (hidden) {
+          renderNotesMd();
+          notesMdPreview.classList.remove('hidden');
+          notesPreviewToggle.innerHTML = '<i class="fa-solid fa-eye-slash"></i> Edit';
+        } else {
+          notesMdPreview.classList.add('hidden');
+          notesPreviewToggle.innerHTML = '<i class="fa-solid fa-eye"></i> Preview';
+        }
+      });
+
+      fNotes.addEventListener('input', () => {
+        if (!notesMdPreview.classList.contains('hidden')) renderNotesMd();
+      });
+
+      // ---------- Password eye toggles ----------
+      function setupEyeToggle(inputId, btnId) {
+        const inp = document.getElementById(inputId);
+        const btn = document.getElementById(btnId);
+        if (!inp || !btn) return;
+        btn.addEventListener('click', () => {
+          const show = inp.type === 'password';
+          inp.type = show ? 'text' : 'password';
+          btn.innerHTML = show
+            ? '<i class="fa-solid fa-eye-slash"></i>'
+            : '<i class="fa-solid fa-eye"></i>';
+        });
+      }
+      setupEyeToggle('login-password', 'toggle-login-pw');
+      setupEyeToggle('signup-password', 'toggle-signup-pw');
+
+      // ---------- Button squish (anime.js) ----------
+      document.addEventListener('click', (e) => {
+        if (typeof anime === 'undefined') return;
+        const btn = e.target.closest('.btn:not(.loading), .control-btn, .tab, .seg');
+        if (btn && !btn.disabled) {
+          anime({
+            targets: btn,
+            scale: [1, 0.91, 1],
+            duration: 260,
+            easing: 'easeOutElastic(1, 0.55)',
+          });
+        }
+      });
+
       function openModalFor(row) {
         editingId = row?.id || null;
 
@@ -3934,11 +4314,18 @@
 
         btnDelete.style.display = editingId ? "" : "none";
 
+        // Reset notes preview
+        notesMdPreview.classList.add('hidden');
+        notesPreviewToggle.innerHTML = '<i class="fa-solid fa-eye"></i> Preview';
+
         openModal(modal);
         fTitle.focus();
         toggleClearButtons();
         initFloatingLabels(modal);
         updateStepperButtons();
+
+        // Update cover preview
+        updateModalCoverPreview();
       }
 
       async function saveModal() {
@@ -4453,6 +4840,14 @@
 
       scrollToTop.onclick = () => {
         scrollPageToTop();
+        if (typeof anime !== 'undefined') {
+          anime({
+            targets: scrollToTop,
+            scale: [1, 0.8, 1.1, 1],
+            duration: 420,
+            easing: 'easeOutElastic(1, 0.5)',
+          });
+        }
       };
 
       const onAnyScroll = () => {
@@ -4686,6 +5081,7 @@
             fImage.value = r.image;
             initFloatingLabels(modal);
             toggleClearButtons();
+            updateModalCoverPreview();
             showToast("success", "Cover set");
           } else {
             showToast("error", "No cover found");
@@ -5019,6 +5415,12 @@
       window.addEventListener("online", () => {
         syncOfflineModal();
         showToast("success", "Back online");
+        // Re-establish realtime subscriptions and refresh data
+        if (user) {
+          setupRealtime();
+          setupPresence();
+          loadEntries();
+        }
       });
 
       // ---------- Chat ----------
@@ -5367,6 +5769,273 @@
       // ---------- Offline modal initial sync ----------
       syncOfflineModal();
 
+      // ============================================================
+      //  ANIME.JS — ALL ANIMATION FUNCTIONS
+      // ============================================================
+
+      /** Bouncing letter wave on the preloader logo */
+      function animatePreloaderLogo() {
+        if (typeof anime === 'undefined') return;
+        const logoEl = document.querySelector('.preloader-logo');
+        if (!logoEl || logoEl.dataset.animeInit) return;
+        logoEl.dataset.animeInit = '1';
+
+        const text = logoEl.textContent || 'AniMehList';
+        logoEl.innerHTML = text.split('').map(c =>
+          c === ' ' ? '<span style="display:inline-block">&nbsp;</span>'
+                    : `<span style="display:inline-block">${c}</span>`
+        ).join('');
+
+        anime({
+          targets: '.preloader-logo span',
+          translateY: [0, -7, 0],
+          duration: 1300,
+          delay: anime.stagger(75, { start: 0 }),
+          easing: 'easeInOutSine',
+          loop: true,
+        });
+      }
+
+      /** Breathing glow on the nav logo */
+      function animateNavLogo() {
+        if (typeof anime === 'undefined') return;
+        const logo = document.querySelector('.logo-img');
+        if (!logo) return;
+
+        anime({
+          targets: logo,
+          filter: [
+            'drop-shadow(0 0 0px rgba(124,58,237,0))',
+            'drop-shadow(0 0 10px rgba(124,58,237,0.68)) drop-shadow(0 0 20px rgba(34,211,238,0.25))',
+            'drop-shadow(0 0 0px rgba(124,58,237,0))',
+          ],
+          duration: 3600,
+          easing: 'easeInOutSine',
+          loop: true,
+          delay: 800,
+        });
+      }
+
+      /** Hero section slide-in entrance */
+      function animateHero() {
+        if (typeof anime === 'undefined') return;
+
+        anime.set('.hero-box', { opacity: 0, translateY: -22 });
+        anime({
+          targets: '.hero-box',
+          opacity: 1,
+          translateY: 0,
+          duration: 950,
+          easing: 'spring(1, 78, 13, 0)',
+          delay: 80,
+        });
+
+        anime.set('.hero h1', { opacity: 0, translateY: 18 });
+        anime({
+          targets: '.hero h1',
+          opacity: 1,
+          translateY: 0,
+          duration: 720,
+          easing: 'easeOutExpo',
+          delay: 340,
+        });
+
+        anime.set('.hero .sub', { opacity: 0, translateY: 10 });
+        anime({
+          targets: '.hero .sub',
+          opacity: 1,
+          translateY: 0,
+          duration: 640,
+          easing: 'easeOutExpo',
+          delay: 500,
+        });
+      }
+
+      /** Stagger-animate newly rendered cards (those without data-anime attr) */
+      function animateNewCards() {
+        if (typeof anime === 'undefined') return;
+        const cols = document.querySelectorAll('.col:not([data-anime])');
+        if (!cols.length) return;
+
+        cols.forEach(c => c.setAttribute('data-anime', '1'));
+
+        anime.set(cols, { opacity: 0, translateY: 22, scale: 0.96 });
+        anime({
+          targets: cols,
+          opacity: 1,
+          translateY: 0,
+          scale: 1,
+          duration: 520,
+          delay: anime.stagger(38, { from: 'first' }),
+          easing: 'easeOutExpo',
+        });
+      }
+
+      /** IntersectionObserver: slide section titles in from left when visible */
+      let sectionTitleObserver = null;
+      function initSectionTitleObserver() {
+        if (typeof anime === 'undefined') return;
+
+        if (sectionTitleObserver) sectionTitleObserver.disconnect();
+
+        const els = document.querySelectorAll('.section-title:not([data-anime])');
+        if (!els.length) return;
+
+        anime.set(els, { opacity: 0, translateX: -28 });
+
+        sectionTitleObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting && !entry.target.dataset.anime) {
+              entry.target.dataset.anime = '1';
+              sectionTitleObserver.unobserve(entry.target);
+              anime({
+                targets: entry.target,
+                translateX: 0,
+                opacity: 1,
+                duration: 580,
+                easing: 'easeOutExpo',
+              });
+            }
+          });
+        }, { threshold: 0.2 });
+
+        els.forEach(el => sectionTitleObserver.observe(el));
+      }
+
+      /** Banner floating particle canvas + shooting stars */
+      function initBannerParticles() {
+        if (typeof anime === 'undefined') return;
+        const banner = document.querySelector('.banner');
+        const canvas = document.getElementById('banner-canvas');
+        if (!banner || !canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        const COLORS = [
+          'rgba(124,58,237,',
+          'rgba(34,211,238,',
+          'rgba(167,139,250,',
+          'rgba(110,231,255,',
+          'rgba(79,70,229,',
+          'rgba(52,211,153,',
+        ];
+
+        function resize() {
+          canvas.width = banner.offsetWidth;
+          canvas.height = banner.offsetHeight;
+        }
+        resize();
+        try {
+          const ro = new ResizeObserver(resize);
+          ro.observe(banner);
+        } catch {}
+
+        // Build particles
+        const particles = [];
+        for (let i = 0; i < 55; i++) {
+          particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            r: Math.random() * 2.0 + 0.35,
+            vx: (Math.random() - 0.5) * 0.22,
+            vy: (Math.random() - 0.5) * 0.22,
+            color: COLORS[Math.floor(Math.random() * COLORS.length)],
+            opacity: Math.random() * 0.45 + 0.04,
+            opacityDir: Math.random() > 0.5 ? 1 : -1,
+            opacitySpeed: 0.0018 + Math.random() * 0.0032,
+          });
+        }
+
+        let rafId;
+        function drawFrame() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          for (const p of particles) {
+            p.x += p.vx;
+            p.y += p.vy;
+
+            // Wrap around edges smoothly
+            if (p.x < -5) p.x = canvas.width + 5;
+            if (p.x > canvas.width + 5) p.x = -5;
+            if (p.y < -5) p.y = canvas.height + 5;
+            if (p.y > canvas.height + 5) p.y = -5;
+
+            // Pulse opacity
+            p.opacity += p.opacitySpeed * p.opacityDir;
+            if (p.opacity > 0.58 || p.opacity < 0.03) {
+              p.opacityDir *= -1;
+              p.opacity = Math.max(0.03, Math.min(0.58, p.opacity));
+            }
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = p.color + p.opacity + ')';
+            ctx.fill();
+          }
+
+          rafId = requestAnimationFrame(drawFrame);
+        }
+        drawFrame();
+
+        // Shooting stars via anime.js tweening
+        const star = { x: 0, y: 0, tx: 0, ty: 0, prog: 0, opacity: 0 };
+
+        function launchStar() {
+          const sx = Math.random() * canvas.width * 0.65;
+          const sy = Math.random() * canvas.height * 0.45;
+          const len = 70 + Math.random() * 110;
+          const angle = Math.PI / 5 + (Math.random() - 0.5) * 0.5;
+          star.x = sx;
+          star.y = sy;
+          star.tx = sx;
+          star.ty = sy;
+          star.prog = 0;
+          star.opacity = 0;
+
+          anime({
+            targets: star,
+            prog: len,
+            opacity: [0, 0.95, 0],
+            duration: 650 + Math.random() * 200,
+            easing: 'easeOutQuart',
+            update: () => {
+              const ex = sx + Math.cos(angle) * star.prog;
+              const ey = sy + Math.sin(angle) * star.prog;
+              ctx.save();
+              ctx.globalAlpha = star.opacity * 0.72;
+              const grad = ctx.createLinearGradient(sx, sy, ex, ey);
+              grad.addColorStop(0, 'rgba(110,231,255,0)');
+              grad.addColorStop(0.6, 'rgba(167,139,250,0.7)');
+              grad.addColorStop(1, 'rgba(110,231,255,1)');
+              ctx.strokeStyle = grad;
+              ctx.lineWidth = 1.6;
+              ctx.lineCap = 'round';
+              ctx.beginPath();
+              ctx.moveTo(sx, sy);
+              ctx.lineTo(ex, ey);
+              ctx.stroke();
+              ctx.restore();
+            },
+            complete: () => {
+              setTimeout(launchStar, 2800 + Math.random() * 7000);
+            },
+          });
+        }
+        setTimeout(launchStar, 1800);
+      }
+
+      // ---------- Visibility change — re-load stale data without full reload ----------
+      document.addEventListener('visibilitychange', async () => {
+        if (document.visibilityState !== 'visible' || !user) return;
+        const elapsed = Date.now() - lastLoadTime;
+        const STALE_MS = 50000; // 50 seconds
+        if (elapsed > STALE_MS) {
+          console.info('[AML] Tab became visible after stale period — refreshing data…');
+          lastLoadTime = Date.now();
+          await loadEntries();
+          setupRealtime();
+        }
+      });
+
       // ---------- Init + Preloader (FIXED: no more stuck-on-reload) ----------
       async function getSessionWithTimeout(timeoutMs = 2500) {
         const timeout = new Promise((resolve) =>
@@ -5462,6 +6131,13 @@
           // Critical: always hide preloader
           hidePreloader();
           startAuthListener();
+
+          // Boot animations
+          requestAnimationFrame(() => {
+            initBannerParticles();
+            animateHero();
+            animateNavLogo();
+          });
         }
       }
 
